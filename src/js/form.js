@@ -235,6 +235,13 @@ export function initForm() {
   // Setup country auto-fill
   setupCountryAutoFill(form);
   
+  // Set check-in date to today if not already set
+  const checkinField = form.querySelector('#checkinDate');
+  if (checkinField && !checkinField.value) {
+    const today = new Date().toISOString().split('T')[0];
+    checkinField.value = today;
+  }
+  
   // Parse prefill parameters on load
   parsePrefillParams();
   
