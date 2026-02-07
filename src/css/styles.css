@@ -446,6 +446,34 @@ body {
   text-decoration: underline;
 }
 
+.footer__powered {
+  margin-top: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.footer__powered a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.footer__powered a:hover {
+  text-decoration: underline;
+}
+
+.footer__github {
+  display: inline-flex;
+  color: var(--color-text-secondary);
+  transition: color 0.2s;
+}
+
+.footer__github:hover {
+  color: var(--color-text);
+  text-decoration: none !important;
+}
+
 /* ===== Modal ===== */
 .modal {
   position: fixed;
