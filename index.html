@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Generate SEF accommodation registration forms for tourists visiting Portugal. Privacy-first, runs entirely in your browser.">
+  <title>SEF Form Generator - Portugal Tourist Registration</title>
+  <link rel="stylesheet" href="/src/css/styles.css">
+  <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://unpkg.com/jspdf-autotable@3.8.1/dist/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <h1 class="header__title">
+        <span class="header__icon">📋</span>
+        <span data-i18n="title">SEF Form Generator</span>
+      </h1>
+      <div class="language-selector">
+        <label for="language-select" class="sr-only" data-i18n="selectLanguage">Select Language</label>
+        <select id="language-select" class="language-selector__select">
+          <option value="en">English</option>
+          <option value="pt">Português</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+          <option value="ru">Русский</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- Introduction -->
+    <section class="intro">
+      <div class="intro__card">
+        <h2 data-i18n="whatIsThis">What is this?</h2>
+        <p data-i18n="whatIsThisDesc">This tool helps you complete the SEF accommodation registration form required for foreign visitors staying at hotels, Airbnb, or other accommodations in Portugal.</p>
+      </div>
+      <div class="intro__card">
+        <h2 data-i18n="whyNeedIt">Why do you need it?</h2>
+        <p data-i18n="whyNeedItDesc">Portuguese law requires all accommodation providers to register foreign guests with SEF (Serviço de Estrangeiros e Fronteiras). This form collects the information needed for that registration.</p>
+      </div>
+      <div class="intro__card">
+        <h2 data-i18n="howToUse">How to use</h2>
+        <ol>
+          <li data-i18n="step1">Fill in your personal and travel details</li>
+          <li data-i18n="step2">Attach photos of your ID or passport</li>
+          <li data-i18n="step3">Click "Generate PDF" to download the completed form</li>
+          <li data-i18n="step4">Provide the PDF to your accommodation host</li>
+        </ol>
+      </div>
+      <div class="intro__card intro__card--privacy">
+        <h2>🔒 <span data-i18n="privacyTitle">Your Privacy is Protected</span></h2>
+        <p data-i18n="privacyDesc">This tool runs entirely in your browser. No data is sent to any server. No information is stored after you close the page. No cookies or tracking of any kind.</p>
+      </div>
+    </section>
+
+    <!-- Prefilled Notice (hidden by default) -->
+    <div id="prefill-notice" class="prefill-notice" hidden>
+      <span class="prefill-notice__icon">ℹ️</span>
+      <span data-i18n="prefillNotice">Some fields have been pre-filled by your accommodation host. You can modify them if needed.</span>
+    </div>
+
+    <!-- Main Form -->
+    <form id="sef-form" class="form" novalidate>
+      <!-- Section 1: Personal Information -->
+      <fieldset class="form__section">
+        <legend data-i18n="personalInfo">Personal Information</legend>
+        
+        <div class="form__row">
+          <div class="form__field">
+            <label for="firstName" data-i18n="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName" required>
+          </div>
+          <div class="form__field">
+            <label for="lastName" data-i18n="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" required>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <div class="form__field form__field--small">
+            <label for="sex" data-i18n="sex">Sex</label>
+            <select id="sex" name="sex" required>
+              <option value="" data-i18n="select">Select...</option>
+              <option value="male" data-i18n="male">Male</option>
+              <option value="female" data-i18n="female">Female</option>
+              <option value="other" data-i18n="other">Other</option>
+            </select>
+          </div>
+          <div class="form__field">
+            <label for="dateOfBirth" data-i18n="dateOfBirth">Date of Birth</label>
+            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <div class="form__field">
+            <label for="placeOfBirth" data-i18n="placeOfBirth">Place of Birth</label>
+            <input type="text" id="placeOfBirth" name="placeOfBirth" required placeholder="City/Town">
+          </div>
+          <div class="form__field">
+            <label for="countryOfBirth" data-i18n="countryOfBirth">Country of Birth</label>
+            <select id="countryOfBirth" name="countryOfBirth" required>
+              <option value="" data-i18n="select">Select...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <div class="form__field">
+            <label for="nationality" data-i18n="nationality">Nationality</label>
+            <select id="nationality" name="nationality" required>
+              <option value="" data-i18n="select">Select...</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Section 2: Travel Document -->
+      <fieldset class="form__section">
+        <legend data-i18n="travelDocument">Travel Document</legend>
+        
+        <div class="form__row">
+          <div class="form__field">
+            <label for="documentType" data-i18n="documentType">Document Type</label>
+            <select id="documentType" name="documentType" required>
+              <option value="" data-i18n="select">Select...</option>
+              <option value="passport" data-i18n="passport">Passport</option>
+              <option value="idCard" data-i18n="idCard">ID Card</option>
+              <option value="other" data-i18n="otherDoc">Other</option>
+            </select>
+          </div>
+          <div class="form__field">
+            <label for="documentNumber" data-i18n="documentNumber">Document Number</label>
+            <input type="text" id="documentNumber" name="documentNumber" required>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <div class="form__field">
+            <label for="issuingCountry" data-i18n="issuingCountry">Issuing Country</label>
+            <select id="issuingCountry" name="issuingCountry" required>
+              <option value="" data-i18n="select">Select...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <div class="form__field">
+            <label for="issueDate" data-i18n="issueDate">Issue Date</label>
+            <input type="date" id="issueDate" name="issueDate">
+          </div>
+          <div class="form__field">
+            <label for="expiryDate" data-i18n="expiryDate">Expiry Date</label>
+            <input type="date" id="expiryDate" name="expiryDate" required>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Section 3: Travel Details -->
+      <fieldset class="form__section">
+        <legend data-i18n="travelDetails">Travel Details</legend>
+        
+        <div class="form__row">
+          <div class="form__field">
+            <label for="dateOfEntry" data-i18n="dateOfEntry">Date of Entry to Portugal</label>
+            <input type="date" id="dateOfEntry" name="dateOfEntry" required>
+          </div>
+          <div class="form__field">
+            <label for="countryOfOrigin" data-i18n="countryOfOrigin">Coming From (Country)</label>
+            <select id="countryOfOrigin" name="countryOfOrigin" required>
+              <option value="" data-i18n="select">Select...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <div class="form__field">
+            <label for="purposeOfStay" data-i18n="purposeOfStay">Purpose of Stay</label>
+            <select id="purposeOfStay" name="purposeOfStay" required>
+              <option value="" data-i18n="select">Select...</option>
+              <option value="tourism" data-i18n="tourism">Tourism</option>
+              <option value="business" data-i18n="business">Business</option>
+              <option value="transit" data-i18n="transit">Transit</option>
+              <option value="other" data-i18n="otherPurpose">Other</option>
+            </select>
+          </div>
+          <div class="form__field">
+            <label for="intendedDestination" data-i18n="intendedDestination">Next Destination (optional)</label>
+            <input type="text" id="intendedDestination" name="intendedDestination" placeholder="Country after Portugal">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Section 4: Accommodation -->
+      <fieldset class="form__section" id="accommodation-section">
+        <legend data-i18n="accommodation">Accommodation in Portugal</legend>
+        
+        <div class="form__row">
+          <div class="form__field form__field--full">
+            <label for="accommodationName" data-i18n="accommodationName">Accommodation Name</label>
+            <input type="text" id="accommodationName" name="accommodationName" required>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <div class="form__field form__field--full">
+            <label for="address" data-i18n="address">Address</label>
+            <textarea id="address" name="address" rows="2" required></textarea>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <div class="form__field form__field--small">
+            <label for="postalCode" data-i18n="postalCode">Postal Code</label>
+            <input type="text" id="postalCode" name="postalCode" required>
+          </div>
+          <div class="form__field">
+            <label for="city" data-i18n="city">City</label>
+            <input type="text" id="city" name="city" required>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <div class="form__field">
+            <label for="checkinDate" data-i18n="checkinDate">Check-in Date</label>
+            <input type="date" id="checkinDate" name="checkinDate" required>
+          </div>
+          <div class="form__field">
+            <label for="checkoutDate" data-i18n="checkoutDate">Check-out Date (optional)</label>
+            <input type="date" id="checkoutDate" name="checkoutDate">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Section 5: Contact -->
+      <fieldset class="form__section">
+        <legend data-i18n="contactInfo">Contact Information (optional)</legend>
+        
+        <div class="form__row">
+          <div class="form__field">
+            <label for="phone" data-i18n="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone">
+          </div>
+          <div class="form__field">
+            <label for="email" data-i18n="email">Email</label>
+            <input type="email" id="email" name="email">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Section 6: Document Attachments -->
+      <fieldset class="form__section">
+        <legend data-i18n="attachments">Document Attachments</legend>
+        
+        <p class="form__hint" data-i18n="attachmentHint">Attach photos of your ID card, passport, or other travel documents. For best results, keep each image under 2MB.</p>
+        
+        <div class="attachments">
+          <div class="attachments__controls">
+            <label class="btn btn--secondary">
+              <span data-i18n="uploadFile">📁 Upload File</span>
+              <input type="file" id="file-upload" accept="image/jpeg,image/png,image/webp" multiple hidden>
+            </label>
+            <button type="button" id="camera-btn" class="btn btn--secondary">
+              <span data-i18n="takePhoto">📷 Take Photo</span>
+            </button>
+          </div>
+          
+          <div id="attachments-list" class="attachments__list"></div>
+        </div>
+      </fieldset>
+
+      <!-- Error Summary -->
+      <div id="error-summary" class="error-summary" hidden>
+        <h3 data-i18n="errorTitle">Please fix the following errors:</h3>
+        <ul id="error-list"></ul>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form__actions">
+        <button type="submit" class="btn btn--primary btn--large">
+          <span data-i18n="generatePdf">📄 Generate PDF</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p class="footer__credits">
+        <a href="#" id="host-link" class="footer__host-link" data-i18n="forAccommodation">For Accommodation Hosts</a>
+      </p>
+      <p class="footer__url" data-i18n="generatedBy">Generated by</p>
+    </footer>
+  </div>
+
+  <!-- Camera Modal -->
+  <div id="camera-modal" class="modal" hidden>
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2 data-i18n="takePhoto">Take Photo</h2>
+        <button type="button" class="modal__close" data-close-modal>&times;</button>
+      </div>
+      <div class="modal__body">
+        <video id="camera-preview" autoplay playsinline></video>
+        <canvas id="camera-canvas" hidden></canvas>
+      </div>
+      <div class="modal__footer">
+        <button type="button" id="capture-btn" class="btn btn--primary" data-i18n="capture">📸 Capture</button>
+        <button type="button" class="btn btn--secondary" data-close-modal data-i18n="cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Host Prefill Modal -->
+  <div id="host-modal" class="modal" hidden>
+    <div class="modal__content modal__content--wide">
+      <div class="modal__header">
+        <h2 data-i18n="hostModalTitle">Generate a Pre-filled Link for Your Guests</h2>
+        <button type="button" class="modal__close" data-close-modal>&times;</button>
+      </div>
+      <div class="modal__body">
+        <div class="host-info">
+          <h3 data-i18n="hostWhatIsThis">What is this?</h3>
+          <p data-i18n="hostDesc">As an accommodation host, you can create a custom link with your property details already filled in. When you share this link with your guests, they only need to add their personal information.</p>
+          
+          <h3 data-i18n="hostHowToUse">How to use:</h3>
+          <ol>
+            <li data-i18n="hostStep1">Fill in your accommodation details below</li>
+            <li data-i18n="hostStep2">Optionally set check-in and check-out dates</li>
+            <li data-i18n="hostStep3">Copy the generated link</li>
+            <li data-i18n="hostStep4">Share the link with your guests (email, WhatsApp, booking confirmation, etc.)</li>
+          </ol>
+          <p class="host-info__note" data-i18n="hostNote">Note: The link contains your data as URL parameters. No data is stored on any server.</p>
+        </div>
+
+        <hr>
+
+        <div class="host-form">
+          <div class="form__row">
+            <div class="form__field form__field--full">
+              <label for="host-accName" data-i18n="accommodationName">Accommodation Name</label>
+              <input type="text" id="host-accName">
+            </div>
+          </div>
+          <div class="form__row">
+            <div class="form__field form__field--full">
+              <label for="host-address" data-i18n="address">Address</label>
+              <textarea id="host-address" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="form__row">
+            <div class="form__field form__field--small">
+              <label for="host-postalCode" data-i18n="postalCode">Postal Code</label>
+              <input type="text" id="host-postalCode">
+            </div>
+            <div class="form__field">
+              <label for="host-city" data-i18n="city">City</label>
+              <input type="text" id="host-city">
+            </div>
+          </div>
+          <div class="form__row">
+            <div class="form__field">
+              <label for="host-checkin" data-i18n="checkinDate">Check-in Date</label>
+              <input type="date" id="host-checkin">
+            </div>
+            <div class="form__field">
+              <label for="host-checkout" data-i18n="checkoutDate">Check-out Date</label>
+              <input type="date" id="host-checkout">
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="host-result">
+          <label for="host-url" data-i18n="generatedLink">Generated Link:</label>
+          <textarea id="host-url" readonly rows="3"></textarea>
+          <button type="button" id="copy-url-btn" class="btn btn--primary">
+            <span data-i18n="copyLink">📋 Copy Link</span>
+          </button>
+          <span id="copy-success" class="copy-success" hidden data-i18n="copied">Copied!</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay" hidden>
+    <div class="loading-overlay__content">
+      <div class="spinner"></div>
+      <p data-i18n="generatingPdf">Generating PDF...</p>
+    </div>
+  </div>
+
+  <script type="module" src="/src/js/app.js"></script>
+</body>
+</html>
