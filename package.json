@@ -6,13 +6,22 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.37.1",
+    "terser": "^5.26.0",
     "vite": "^6.0.0",
     "vite-plugin-singlefile": "^2.0.0",
-    "terser": "^5.26.0"
+    "wrangler": "^4.92.0"
   },
-  "keywords": ["sef", "portugal", "tourism", "form", "pdf"],
+  "keywords": [
+    "sef",
+    "portugal",
+    "tourism",
+    "form",
+    "pdf"
+  ],
   "license": "MIT"
 }
